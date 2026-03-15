@@ -45,12 +45,10 @@ def is_image_part_equal(
 ) -> bool:
     "compares part of two images specified in the comparison area on a pixel basis"
     for width_index in range(
-        comparison_area.top_left.x,
-        comparison_area.bottom_right.x,
+        comparison_area.top_left.x, comparison_area.bottom_right.x, 5
     ):
         for height_index in range(
-            comparison_area.top_left.y,
-            comparison_area.bottom_right.y,
+            comparison_area.top_left.y, comparison_area.bottom_right.y, 5
         ):
             if (
                 reference_image[height_index][width_index][0]
