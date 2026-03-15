@@ -4,7 +4,8 @@ import utils
 import time
 import specific_pokemon
 
-if __name__ == "__main__":
+
+def main():
     # load all reference images
     search_engine = specific_pokemon.PokemonSearchEngine()
 
@@ -59,3 +60,12 @@ if __name__ == "__main__":
         elif len(printout) < terminal_columns:
             printout = printout + " " * (terminal_columns - len(printout))
         print(printout, end="\r")
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("\nmanual intervention")
+    finally:
+        print("programm ended")
