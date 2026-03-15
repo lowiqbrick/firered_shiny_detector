@@ -10,10 +10,18 @@ class PokemonSearchEngine:
         )
 
     def is_mewtwo(self, captured_image: cv2.typing.MatLike) -> bool:
-        return utils.is_status_menue_equal(self.mewtwo_reference, captured_image)
+        return utils.is_image_part_equal(
+            self.mewtwo_reference,
+            captured_image,
+            utils.Rectangle(utils.Point(310, 140), utils.Point(460, 185)),
+        )
 
     def is_mewtwo_shiny(self, captured_image: cv2.typing.MatLike) -> bool:
-        return not utils.is_pokemon_equal(self.mewtwo_reference, captured_image)
+        return not utils.is_image_part_equal(
+            self.mewtwo_reference,
+            captured_image,
+            utils.Rectangle(utils.Point(1410, 330), utils.Point(1440, 360)),
+        )
 
 
 if __name__ == "__main__":
