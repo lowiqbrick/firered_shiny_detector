@@ -26,10 +26,8 @@ if __name__ == "__main__":
         success, frame = cap.read()
 
         if not success:
-            printout += "video could not be read"
-            cap.release()
+            printout += "no frame"
             cv2.destroyAllWindows()
-            break
         else:
             printout += "got frame;"
             # display frame
@@ -48,8 +46,11 @@ if __name__ == "__main__":
                     printout += " mewtwo isn't shiny;"
 
         # fps calculation
-        fps_averager.insert_new_value(1 / (time.time() - start_time))
-        printout += " fps: " + str(fps_averager.get_fps()) + ";"
+        delta_time = time.time() - start_time
+        # is delta time not zero
+        if delta_time:
+            fps_averager.insert_new_value(1 / delta_time)
+            printout += " fps: " + str(fps_averager.get_fps()) + ";"
 
         # print info on screen
         terminal_columns = os.get_terminal_size().columns
