@@ -1,5 +1,6 @@
 import cv2
 import time
+import os
 import datetime
 
 
@@ -145,6 +146,28 @@ class FPSAverager:
     def get_fps(self) -> int:
         assert len(self.frame_list) == self.__max_size
         return round(sum(self.frame_list) / len(self.frame_list), 1)
+
+
+class LoopReporter:
+    def __init__(self):
+        self.__reset()
+
+    def add_printout(self, text: str):
+        self.__printout += text
+
+    def print(self):
+        terminal_columns = os.get_terminal_size().columns
+        if len(self.__printout) > terminal_columns:
+            self.__printout = self.__printout[:terminal_columns]
+        elif len(self.__printout) < terminal_columns:
+            self.__printout = self.__printout + " " * (
+                terminal_columns - len(self.__printout)
+            )
+        print(self.__printout, end="\r")
+        self.__reset()
+
+    def __reset(self):
+        self.__printout = ""
 
 
 if __name__ == "__main__":

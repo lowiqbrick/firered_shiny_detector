@@ -1,5 +1,4 @@
 import cv2
-import os
 import utils
 import time
 import specific_pokemon
@@ -15,6 +14,9 @@ def main():
     # get video source (0: switch 2; 1: pc webcam)
     cap = cv2.VideoCapture(0)
 
+    # status printer
+    logger = utils.LoopReporter()
+
     # set limits for capture of switch 2
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
@@ -22,44 +24,37 @@ def main():
     # display captured images
     while True:
         start_time = time.time()
-        printout = ""
         # capture frame
         success, frame = cap.read()
 
         if not success:
-            printout += "no frame"
+            logger.add_printout("no frame")
             cv2.destroyAllWindows()
         else:
-            printout += "got frame;"
+            logger.add_printout("got frame;")
             # display frame
             cv2.imshow("HDMI Video Capture", frame)
             cv2.waitKey(1)
 
             # search for pokemon
             if search_engine.is_mewtwo(frame):
-                printout += " mewtwo detected;"
+                logger.add_printout(" mewtwo detected;")
                 if search_engine.is_mewtwo_shiny(frame):
                     utils.save_shiny(frame)
                     # TODO add code that turns off the controller
-                    printout += "shiny found omg !!!!11111eleven"
+                    logger.add_printout("shiny found omg !!!!11111eleven")
+                    logger.print()
                     break
                 else:
-                    printout += " mewtwo isn't shiny;"
+                    logger.add_printout(" mewtwo isn't shiny;")
 
         # fps calculation
         delta_time = time.time() - start_time
         # is delta time not zero
         if delta_time:
             fps_averager.insert_new_value(1 / delta_time)
-            printout += " fps: " + str(fps_averager.get_fps()) + ";"
-
-        # print info on screen
-        terminal_columns = os.get_terminal_size().columns
-        if len(printout) > terminal_columns:
-            printout = printout[:terminal_columns]
-        elif len(printout) < terminal_columns:
-            printout = printout + " " * (terminal_columns - len(printout))
-        print(printout, end="\r")
+            logger.add_printout(" fps: " + str(fps_averager.get_fps()) + ";")
+        logger.print()
 
 
 if __name__ == "__main__":
