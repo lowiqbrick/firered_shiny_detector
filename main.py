@@ -1,6 +1,9 @@
 import cv2
-import utils
 import time
+import datetime
+
+import sms
+import utils
 import specific_pokemon
 
 
@@ -20,6 +23,9 @@ def main():
     # set limits for capture of switch 2
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
+
+    # sms notification (not mandatory)
+    sender = sms.SMSSender()
 
     # display captured images
     while True:
@@ -44,6 +50,11 @@ def main():
                     # TODO add code that turns off the controller
                     logger.add_printout("shiny found omg !!!!11111eleven")
                     logger.print()
+                    date_time = str(datetime.datetime.now())
+                    # save for debugging
+                    cv2.imwrite("suspect_shiny_" + str(date_time) + ".png", frame)
+                    # notify me
+                    sender.send("shiny suspected at " + str(date_time))
                     break
                 else:
                     logger.add_printout(" mewtwo isn't shiny;")
