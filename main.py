@@ -27,8 +27,14 @@ def main():
     # sms notification (not mandatory)
     sender = sms.SMSSender()
 
+    is_last_detected = False
+    reset_counter = 0
+
+    print("started at " + str(datetime.datetime.now()))
+
     # display captured images
     while True:
+        is_detected = False
         start_time = time.time()
         # capture frame
         success, frame = cap.read()
@@ -42,8 +48,11 @@ def main():
             cv2.imshow("HDMI Video Capture", frame)
             cv2.waitKey(1)
 
+            logger.add_printout(" " + str(reset_counter) + " resets;")
+
             # search for pokemon
             if search_engine.is_mewtwo(frame):
+                is_detected = True
                 logger.add_printout(" mewtwo detected;")
                 if search_engine.is_mewtwo_shiny(frame):
                     utils.save_shiny(frame)
@@ -66,6 +75,10 @@ def main():
             fps_averager.insert_new_value(1 / delta_time)
             logger.add_printout(" fps: " + str(fps_averager.get_fps()) + ";")
         logger.print()
+
+        if not is_detected and is_last_detected:
+            reset_counter += 1
+        is_last_detected = is_detected
 
 
 if __name__ == "__main__":
