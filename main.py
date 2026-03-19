@@ -63,7 +63,10 @@ def main():
                     # save for debugging
                     cv2.imwrite("suspect_shiny_" + str(date_time) + ".png", frame)
                     # notify me
-                    sender.send("shiny suspected at " + str(date_time))
+                    try:
+                        sender.send("shiny suspected at " + str(date_time))
+                    except ConnectionError:
+                        print("\nfailed to send message")
                     break
                 else:
                     logger.add_printout(" mewtwo isn't shiny;")
