@@ -67,7 +67,8 @@ def main():
                         sender.send("shiny suspected at " + str(date_time))
                     except ConnectionError:
                         print("\nfailed to send message")
-                    break
+                    finally:
+                        break
                 else:
                     logger.add_printout(" mewtwo isn't shiny;")
 
