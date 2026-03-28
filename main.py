@@ -45,7 +45,7 @@ def main():
         else:
             logger.add_printout("got frame;")
             # display frame
-            cv2.imshow("HDMI Video Capture", frame)
+            cv2.imshow("HDMI Video Capture", cv2.resize(src=frame, dsize=(1000,500)))
             cv2.waitKey(1)
 
             logger.add_printout(" " + str(reset_counter) + " resets;")
