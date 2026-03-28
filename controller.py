@@ -29,9 +29,9 @@ if __name__ == "__main__":
     # look at the delay of the relais
     print("test starts in 2 seconds")
     time.sleep(2)
-    print("about to turn off")
+    print("about to turn on")
     ch1.off()
-    print("turned off")
+    print("turned on")
     time.sleep(5)
     ch1.on()
     print("turned off again")
