@@ -1,4 +1,5 @@
 from gpiozero import LED
+
 import time
 
 if __name__ == "__main__":

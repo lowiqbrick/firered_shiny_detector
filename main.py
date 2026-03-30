@@ -1,6 +1,7 @@
 import cv2
 import time
 import datetime
+from gpiozero import LED
 
 import sms
 import utils
@@ -8,6 +9,9 @@ import specific_pokemon
 
 
 def main():
+    # start controller pin
+    controller = LED(21)
+
     # load all reference images
     search_engine = specific_pokemon.PokemonSearchEngine()
 
@@ -45,7 +49,7 @@ def main():
         else:
             logger.add_printout("got frame;")
             # display frame
-            cv2.imshow("HDMI Video Capture", cv2.resize(src=frame, dsize=(1000,500)))
+            cv2.imshow("HDMI Video Capture", cv2.resize(src=frame, dsize=(1000, 500)))
             cv2.waitKey(1)
 
             logger.add_printout(" " + str(reset_counter) + " resets;")
@@ -56,7 +60,8 @@ def main():
                 logger.add_printout(" mewtwo detected;")
                 if search_engine.is_mewtwo_shiny(frame):
                     utils.save_shiny(frame)
-                    # TODO add code that turns off the controller
+                    # turn off the controller
+                    controller.on()
                     logger.add_printout("shiny found omg !!!!11111eleven")
                     logger.print()
                     date_time = str(datetime.datetime.now())
