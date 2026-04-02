@@ -7,6 +7,9 @@ import sms
 import utils
 import specific_pokemon
 
+# time for one macro period - 0.5 seconds for relais
+TIME_FOR_SHINY = 18.1
+
 
 def main():
     # start controller pin
@@ -31,6 +34,9 @@ def main():
     # sms notification (not mandatory)
     sender = sms.SMSSender()
 
+    # initialize with five minutes time for setup
+    time_since_last_period = time.time() + 300
+
     is_last_detected = False
     reset_counter = 0
 
@@ -53,9 +59,15 @@ def main():
             cv2.waitKey(1)
 
             logger.add_printout(" " + str(reset_counter) + " resets;")
+            logger.add_printout(
+                " " + str(round(time.time() - time_since_last_period, 2)) + "s period; "
+            )
 
             # search for pokemon
-            if search_engine.is_mewtwo(frame):
+            if search_engine.is_mewtwo(frame) or (
+                not is_last_detected
+                and ((time.time() - time_since_last_period) >= TIME_FOR_SHINY)
+            ):
                 is_detected = True
                 logger.add_printout(" mewtwo detected;")
                 if search_engine.is_mewtwo_shiny(frame):
@@ -87,6 +99,7 @@ def main():
 
         if not is_detected and is_last_detected:
             reset_counter += 1
+            time_since_last_period = time.time()
         is_last_detected = is_detected
 
 
