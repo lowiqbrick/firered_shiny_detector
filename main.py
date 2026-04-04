@@ -77,8 +77,6 @@ def main():
                     logger.add_printout("shiny found omg !!!!11111eleven")
                     print(logger.print())
                     date_time = str(datetime.datetime.now())
-                    # save for debugging
-                    cv2.imwrite("suspect_shiny_" + str(date_time) + ".png", frame)
                     # notify me
                     try:
                         sender.send("shiny suspected at " + str(date_time))
