@@ -124,7 +124,7 @@ class LoopReporter:
     def add_printout(self, text: str):
         self.__printout += text
 
-    def print(self):
+    def print(self) -> str:
         terminal_columns = os.get_terminal_size().columns
         if len(self.__printout) > terminal_columns:
             self.__printout = self.__printout[:terminal_columns]
@@ -132,8 +132,9 @@ class LoopReporter:
             self.__printout = self.__printout + " " * (
                 terminal_columns - len(self.__printout)
             )
-        print(self.__printout, end="\r")
+        printout = self.__printout + "\r"
         self.__reset()
+        return printout
 
     def __reset(self):
         self.__printout = ""

@@ -75,7 +75,7 @@ def main():
                     # turn off the controller
                     controller.on()
                     logger.add_printout("shiny found omg !!!!11111eleven")
-                    logger.print()
+                    print(logger.print())
                     date_time = str(datetime.datetime.now())
                     # save for debugging
                     cv2.imwrite("suspect_shiny_" + str(date_time) + ".png", frame)
@@ -95,7 +95,7 @@ def main():
         if delta_time:
             fps_averager.insert_new_value(1 / delta_time)
             logger.add_printout(" fps: " + str(fps_averager.get_fps()) + ";")
-        logger.print()
+        print(logger.print())
 
         if not is_detected and is_last_detected:
             reset_counter += 1
