@@ -60,7 +60,9 @@ def main():
 
             logger.add_printout(" " + str(reset_counter) + " resets;")
             logger.add_printout(
-                " " + str(round(time.time() - time_since_last_period, 2)) + "s period; "
+                " "
+                + utils.period_to_str(round(time.time() - time_since_last_period, 2))
+                + "s period; "
             )
 
             # search for pokemon
