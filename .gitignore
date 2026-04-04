@@ -2,6 +2,7 @@
 reference_**.png
 !**cleanup.py
 __pycache__
+.pytest_cache
 bin
 lib
 lib64
