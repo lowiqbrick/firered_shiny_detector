@@ -8,7 +8,7 @@ import utils
 import specific_pokemon
 
 # time for one macro period - 0.5 seconds for relais
-TIME_FOR_SHINY = 18.1
+TIME_FOR_SHINY = 17.9
 
 
 def main():
@@ -77,7 +77,7 @@ def main():
                     # turn off the controller
                     controller.on()
                     logger.add_printout("shiny found omg !!!!11111eleven")
-                    print(logger.print())
+                    print(logger.print(), end="")
                     date_time = str(datetime.datetime.now())
                     # notify me
                     try:
@@ -95,7 +95,7 @@ def main():
         if delta_time:
             fps_averager.insert_new_value(1 / delta_time)
             logger.add_printout(" fps: " + str(fps_averager.get_fps()) + ";")
-        print(logger.print())
+        print(logger.print(), end="")
 
         if not is_detected and is_last_detected:
             reset_counter += 1
