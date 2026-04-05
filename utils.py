@@ -143,7 +143,7 @@ class LoopReporter:
 def period_to_str(period: float) -> str:
     period_string = str(round(period, 2))
     if len(period_string) < 5:
-        period_string = ((5 - len(period_string)) * " ") + period_string
+        period_string = period_string + ((5 - len(period_string)) * " ")
     return period_string
 
 
