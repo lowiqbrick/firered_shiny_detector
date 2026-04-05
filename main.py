@@ -71,7 +71,7 @@ def main():
                 and ((time.time() - time_since_last_period) >= TIME_FOR_SHINY)
             ):
                 is_detected = True
-                logger.add_printout(" mewtwo detected;")
+                logger.add_printout(" detection;")
                 if search_engine.is_mewtwo_shiny(frame):
                     utils.save_shiny(frame)
                     # turn off the controller
@@ -87,7 +87,7 @@ def main():
                     finally:
                         break
                 else:
-                    logger.add_printout(" mewtwo isn't shiny;")
+                    logger.add_printout(" not shiny;")
 
         # fps calculation
         delta_time = time.time() - start_time
