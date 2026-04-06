@@ -1,5 +1,4 @@
 import cv2
-import time
 import utils
 
 
@@ -77,14 +76,25 @@ def show_pixel_in_image(
                     image[height_index][width_index][2] / 2 + channel3 / 2
                 )
 
+    print(
+        f"channel 1 (blue): {channel1}; channel 2 (green): {channel2}; channel 3 (red): {channel3}"
+    )
+
     return image
 
 
 if __name__ == "__main__":
-    mewtwo_reference = cv2.imread("selected_references/fight_menue_reference.png")
-    pixel_emphasised = show_pixel_in_image(mewtwo_reference, utils.Point(1400, 350), 50)
+    mewtwo_reference = cv2.imread("selected_references/mewtwo_reference.png")
+    pixel_emphasised = show_pixel_in_image(
+        mewtwo_reference, utils.Point(1400, 350), 200
+    )
     cv2.imshow("pixel example", pixel_emphasised)
     cv2.waitKey(1)
 
-    time.sleep(10)
+    try:
+        while True:
+            pass
+    except KeyboardInterrupt:
+        print("\nprogram ended")
+
     cv2.destroyAllWindows()
