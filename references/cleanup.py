@@ -32,4 +32,4 @@ if __name__ == "__main__":
         # add image to list if not yet seen
         processed_images.append(image)
 
-    print("deleted " + str(deleted_images) + " images")
+    # print("deleted " + str(deleted_images) + " images")

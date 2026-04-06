@@ -6,6 +6,7 @@ from gpiozero import LED
 import sms
 import utils
 import specific_pokemon
+import subprocess
 
 # time for one macro period - 0.5 seconds for relais
 TIME_FOR_SHINY = 17.9
@@ -38,6 +39,7 @@ def main():
     time_since_last_period = time.time() + 300
 
     is_last_detected = False
+    is_period_image_taken = False
     reset_counter = 0
 
     print("started at " + str(datetime.datetime.now()))
@@ -94,12 +96,26 @@ def main():
         # is delta time not zero
         if delta_time:
             fps_averager.insert_new_value(1 / delta_time)
-            logger.add_printout(" fps: " + str(fps_averager.get_fps()) + ";")
+            logger.add_printout("fps: " + str(fps_averager.get_fps()) + ";")
         print(logger.print(), end="")
+
+        if (
+            time.time() - time_since_last_period
+        ) >= TIME_FOR_SHINY and not is_period_image_taken:
+            utils.save_encounter(frame)
+            is_period_image_taken = True
 
         if not is_detected and is_last_detected:
             reset_counter += 1
             time_since_last_period = time.time()
+            if not is_period_image_taken and reset_counter != 0:
+                print(
+                    "\nmewtwo image not taken in cycle " + str(datetime.datetime.now())
+                )
+            is_period_image_taken = False
+            if reset_counter > 5 and (reset_counter % 10) == 0:
+                subprocess.run(["python3", "references/cleanup.py"])
+
         is_last_detected = is_detected
 
 

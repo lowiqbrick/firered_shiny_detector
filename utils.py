@@ -100,6 +100,26 @@ def save_shiny(image: cv2.typing.MatLike):
     )
 
 
+def save_encounter(image: cv2.typing.MatLike):
+    date_time = datetime.datetime.now()
+    cv2.imwrite(
+        "references/encounter_"
+        + str(date_time.year)
+        + "_"
+        + str(date_time.month)
+        + "_"
+        + str(date_time.day)
+        + "_"
+        + str(date_time.hour)
+        + "_"
+        + str(date_time.minute)
+        + "_"
+        + str(date_time.second)
+        + ".png",
+        image,
+    )
+
+
 class FPSAverager:
     def __init__(self, size_limit: int):
         self.__max_size = size_limit
