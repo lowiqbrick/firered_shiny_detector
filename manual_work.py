@@ -1,5 +1,6 @@
 import cv2
 import utils
+import numpy as np
 
 
 def black_image_part(
@@ -83,12 +84,37 @@ def show_pixel_in_image(
     return image
 
 
+def gray_comparison_image(
+    img1: cv2.typing.MatLike, img2: cv2.typing.MatLike
+) -> cv2.typing.MatLike:
+    """
+    images must be imported as gray scale images:
+    cv2.imread("image_name.png", cv2.IMREAD_GRAYSCALE)
+    """
+    # Convert to signed type to avoid uint8 wraparound
+    a = img1.astype(np.int16)
+    b = img2.astype(np.int16)
+
+    # Signed difference centered at gray (128)
+    diff = b - a + 128
+
+    # Clamp to valid image range
+    diff = np.clip(diff, 0, 255).astype(np.uint8)
+
+    return diff
+
+
 if __name__ == "__main__":
-    mewtwo_reference = cv2.imread("selected_references/mewtwo_reference.png")
-    pixel_emphasised = show_pixel_in_image(
-        mewtwo_reference, utils.Point(1400, 350), 200
+    mewtwo_reference = cv2.imread(
+        "selected_references/mewtwo_reference.png", cv2.IMREAD_GRAYSCALE
     )
-    cv2.imshow("pixel example", pixel_emphasised)
+    colorchannel_reference = cv2.imread(
+        "selected_references/cholor_channel_reference.png", cv2.IMREAD_GRAYSCALE
+    )
+
+    cv2.imshow(
+        "pixel example", gray_comparison_image(mewtwo_reference, colorchannel_reference)
+    )
     cv2.waitKey(1)
 
     try:
