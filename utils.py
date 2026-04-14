@@ -1,6 +1,8 @@
 import cv2
 import os
+import time
 import datetime
+import subprocess
 
 
 class Point:
@@ -100,26 +102,6 @@ def save_shiny(image: cv2.typing.MatLike):
     )
 
 
-def save_encounter(image: cv2.typing.MatLike):
-    date_time = datetime.datetime.now()
-    cv2.imwrite(
-        "references/encounter_"
-        + str(date_time.year)
-        + "_"
-        + str(date_time.month)
-        + "_"
-        + str(date_time.day)
-        + "_"
-        + str(date_time.hour)
-        + "_"
-        + str(date_time.minute)
-        + "_"
-        + str(date_time.second)
-        + ".png",
-        image,
-    )
-
-
 class FPSAverager:
     def __init__(self, size_limit: int):
         self.__max_size = size_limit
@@ -165,6 +147,46 @@ def period_to_str(period: float) -> str:
     if len(period_string) < 5:
         period_string = period_string + ((5 - len(period_string)) * " ")
     return period_string
+
+
+class PeriodImager:
+    TIME_FOR_SHINY = 17.9
+
+    def __init__(self):
+        self.__image_taken = False
+
+    def save_encounter(self, image: cv2.typing.MatLike):
+        date_time = datetime.datetime.now()
+        cv2.imwrite(
+            "references/encounter_"
+            + str(date_time.year)
+            + "_"
+            + str(date_time.month)
+            + "_"
+            + str(date_time.day)
+            + "_"
+            + str(date_time.hour)
+            + "_"
+            + str(date_time.minute)
+            + "_"
+            + str(date_time.second)
+            + ".png",
+            image,
+        )
+
+    def take_image(self, time_since_last_period: float, frame: cv2.typing.MatLike):
+        if (
+            time.time() - time_since_last_period
+        ) >= self.TIME_FOR_SHINY and not self.__image_taken:
+            self.save_encounter(frame)
+            self.__image_taken = True
+
+    def reset(self, reset_counter: int):
+        if not self.__image_taken and reset_counter > 2:
+            print("\nmewtwo image not taken in cycle " + str(datetime.datetime.now()))
+        self.__image_taken = False
+        if (reset_counter % 10) == 0:
+            subprocess.run(["python3", "references/cleanup.py"])
 
 
 if __name__ == "__main__":
