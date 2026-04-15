@@ -14,6 +14,7 @@ class SMSSender:
         self.to_address = os.environ.get("MY_NUMBER")
         self.client = Client(self.account_sid, self.auth_token)
         self.__time_last_sent = time.time() - self.TIME_BETWEEN_SENDS
+        assert self.to_address is not None
 
     def is_timeout_over(self) -> bool:
         if (self.__time_last_sent + self.TIME_BETWEEN_SENDS) < time.time():
@@ -23,6 +24,7 @@ class SMSSender:
             return False
 
     def send(self, message: str):
+        assert self.to_address is not None
         if self.is_timeout_over():
             self.client.messages.create(
                 body=message, from_=self.from_address, to=self.to_address
@@ -36,7 +38,7 @@ class SMSSender:
 
 
 if __name__ == "__main__":
-    # costs cuple cents
+    # costs couple cents
     sender = SMSSender()
     sender.send("message from me to me")
     time.sleep(5)

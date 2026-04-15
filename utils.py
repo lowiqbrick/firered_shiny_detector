@@ -4,9 +4,12 @@ import time
 import datetime
 import subprocess
 
+# time for one macro period - 0.5 seconds for relay
+TIME_FOR_SHINY = 17.9
+
 
 class Point:
-    def __init__(self, x: int | float, y: int | float):
+    def __init__(self, x: float, y: float):
         self.x = x
         self.y = y
 
@@ -26,18 +29,20 @@ class Rectangle:
             and self.bottom_right.y > point.y
         ):
             return True
-        False
+        return False
 
     def is_point_outside_rectangle(self, point: Point) -> bool:
         return not self.is_point_in_rectangle(point)
 
-    def opponent_stat_rec():
-        # returns rectangle with the opponents status
-        return Rectangle(Point(300, 130), Point(840, 260))
 
-    def opponent_pokemon():
-        # returns rectangle with the opponents pokemon sprite
-        return Rectangle(Point(1150, 80), Point(1550, 450))
+def opponent_stat_rec():
+    # returns rectangle with the opponents status
+    return Rectangle(Point(300, 130), Point(840, 260))
+
+
+def opponent_pokemon():
+    # returns rectangle with the opponents pokemon sprite
+    return Rectangle(Point(1150, 80), Point(1550, 450))
 
 
 def is_image_part_equal(
@@ -47,10 +52,10 @@ def is_image_part_equal(
 ) -> bool:
     "compares part of two images specified in the comparison area on a pixel basis"
     for width_index in range(
-        comparison_area.top_left.x, comparison_area.bottom_right.x, 5
+        int(comparison_area.top_left.x), int(comparison_area.bottom_right.x), 5
     ):
         for height_index in range(
-            comparison_area.top_left.y, comparison_area.bottom_right.y, 5
+            int(comparison_area.top_left.y), int(comparison_area.bottom_right.y), 5
         ):
             if (
                 reference_image[height_index][width_index][0]
@@ -64,22 +69,18 @@ def is_image_part_equal(
     return True
 
 
-def is_status_menue_equal(
+def is_status_menu_equal(
     reference_image: cv2.typing.MatLike,
     captured_image: cv2.typing.MatLike,
 ) -> bool:
-    return is_image_part_equal(
-        reference_image, captured_image, Rectangle.opponent_stat_rec()
-    )
+    return is_image_part_equal(reference_image, captured_image, opponent_stat_rec())
 
 
 def is_pokemon_equal(
     reference_image: cv2.typing.MatLike,
     captured_image: cv2.typing.MatLike,
 ) -> bool:
-    return is_image_part_equal(
-        reference_image, captured_image, Rectangle.opponent_pokemon()
-    )
+    return is_image_part_equal(reference_image, captured_image, opponent_pokemon())
 
 
 def save_shiny(image: cv2.typing.MatLike):
@@ -110,11 +111,11 @@ class FPSAverager:
         for _ in range(0, size_limit):
             self.frame_list.append(0)
 
-    def insert_new_value(self, value: int):
+    def insert_new_value(self, value: float):
         self.frame_list[self.__current_index] = value
         self.__current_index = (self.__current_index + 1) % self.__max_size
 
-    def get_fps(self) -> int:
+    def get_fps(self) -> float:
         assert len(self.frame_list) == self.__max_size
         return round(sum(self.frame_list) / len(self.frame_list), 1)
 
@@ -150,8 +151,6 @@ def period_to_str(period: float) -> str:
 
 
 class PeriodImager:
-    TIME_FOR_SHINY = 17.9
-
     def __init__(self):
         self.__image_taken = False
 
@@ -177,7 +176,7 @@ class PeriodImager:
     def take_image(self, time_since_last_period: float, frame: cv2.typing.MatLike):
         if (
             time.time() - time_since_last_period
-        ) >= self.TIME_FOR_SHINY and not self.__image_taken:
+        ) >= TIME_FOR_SHINY and not self.__image_taken:
             self.save_encounter(frame)
             self.__image_taken = True
 

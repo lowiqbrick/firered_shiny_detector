@@ -20,8 +20,9 @@ if __name__ == "__main__":
             continue
 
         # read image data
-        # shape: (1080, 1920, 3); height, width, colorchannels)
+        # shape: (1080, 1920, 3); height, width, color channels)
         image = cv2.imread(filepath)
+        assert image is not None
 
         # image already seen?
         if any([np.array_equal(image, image_test) for image_test in processed_images]):

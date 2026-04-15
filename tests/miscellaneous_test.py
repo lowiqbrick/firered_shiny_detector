@@ -15,20 +15,21 @@ def test_cv2_color_channels():
     import cv2
     import numpy as np
 
-    cholorchannel_test = np.zeros((1080, 1920, 3)) + 128
+    color_channel_test = np.zeros((1080, 1920, 3)) + 128
 
     for height_index in range(0, 1080):
         for width_index in range(0, 1920):
             if height_index <= 510 and width_index <= 990:
-                cholorchannel_test[height_index][width_index][0] = 255
+                color_channel_test[height_index][width_index][0] = 255
             if height_index > 510 and width_index < 990:
-                cholorchannel_test[height_index][width_index][1] = 255
+                color_channel_test[height_index][width_index][1] = 255
             if height_index < 510 and width_index > 990:
-                cholorchannel_test[height_index][width_index][2] = 255
-    cv2.imwrite("selected_references/cholor_channel_reference.png", cholorchannel_test)
+                color_channel_test[height_index][width_index][2] = 255
+    cv2.imwrite("selected_references/color_channel_reference.png", color_channel_test)
     """
 
-    test_image = cv2.imread("selected_references/cholor_channel_reference.png")
+    test_image = cv2.imread("selected_references/color_channel_reference.png")
+    assert test_image is not None
 
     # image dimensions (height, width, color dims) (1020, 1980, 3)
     # top left blue

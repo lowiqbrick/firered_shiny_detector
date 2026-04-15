@@ -7,9 +7,6 @@ import sms
 import utils
 import specific_pokemon
 
-# time for one macro period - 0.5 seconds for relais
-TIME_FOR_SHINY = 17.9
-
 
 def main():
     # start controller pin
@@ -71,7 +68,7 @@ def main():
             # search for pokemon
             if search_engine.is_mewtwo(frame) or (
                 not is_last_detected
-                and ((time.time() - time_since_last_period) >= TIME_FOR_SHINY)
+                and ((time.time() - time_since_last_period) >= utils.TIME_FOR_SHINY)
             ):
                 is_detected = True
                 logger.add_printout(" detection;")
@@ -116,4 +113,4 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print("\nmanual intervention")
     finally:
-        print("programm ended")
+        print("program ended")

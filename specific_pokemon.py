@@ -6,8 +6,10 @@ import utils
 class PokemonSearchEngine:
     def __init__(self):
         self.mewtwo_reference = cv2.imread("selected_references/mewtwo_reference.png")
+        assert self.mewtwo_reference is not None
 
     def is_mewtwo(self, captured_image: cv2.typing.MatLike) -> bool:
+        assert self.mewtwo_reference is not None
         return utils.is_image_part_equal(
             self.mewtwo_reference,
             captured_image,
@@ -15,6 +17,7 @@ class PokemonSearchEngine:
         )
 
     def is_mewtwo_shiny(self, captured_image: cv2.typing.MatLike) -> bool:
+        assert self.mewtwo_reference is not None
         mewtwo_point = utils.Point(1400, 350)
         return not utils.is_image_part_equal(
             self.mewtwo_reference,
