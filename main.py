@@ -70,6 +70,10 @@ def main():
                 not is_last_detected
                 and ((time.time() - time_since_last_period) >= utils.TIME_FOR_SHINY)
             ):
+                if not is_last_detected and (
+                    (time.time() - time_since_last_period) >= utils.TIME_FOR_SHINY
+                ):
+                    period_imager.take_image(time_since_last_period, frame)
                 is_detected = True
                 logger.add_printout(" detection;")
                 if search_engine.is_mewtwo_shiny(frame):

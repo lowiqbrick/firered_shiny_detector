@@ -169,6 +169,8 @@ class PeriodImager:
             + str(date_time.minute)
             + "_"
             + str(date_time.second)
+            + "_"
+            + str(date_time.microsecond)
             + ".png",
             image,
         )
