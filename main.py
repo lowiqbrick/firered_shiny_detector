@@ -91,14 +91,15 @@ def main():
 
         # fps calculation
         delta_time = time.time() - start_time
-        # is delta time not zero
         if delta_time:
             fps_averager.insert_new_value(1 / delta_time)
             logger.add_printout("fps: " + str(fps_averager.get_fps()) + ";")
         print(logger.print(), end="")
 
+        # take sample images
         period_imager.take_image(time_since_last_period, frame)
 
+        # update for next period
         if not is_detected and is_last_detected:
             reset_counter += 1
             time_since_last_period = time.time()
