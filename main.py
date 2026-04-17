@@ -114,4 +114,4 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print("\nmanual intervention")
     finally:
-        print("program ended")
+        print("\nprogram ended")
