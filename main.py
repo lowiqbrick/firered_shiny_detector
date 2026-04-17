@@ -67,6 +67,8 @@ def main():
 
             is_detected = search_engine.is_mewtwo(frame)
             period_timer.preemptive_check(is_detected, is_last_detected)
+            if period_timer.is_pokemon_present():
+                period_imager.save_encounter(frame)
 
             # search for pokemon
             if is_detected or period_timer.is_pokemon_present():
