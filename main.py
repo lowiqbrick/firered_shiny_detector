@@ -31,8 +31,8 @@ def main():
     # sms notification (not mandatory)
     sender = sms.SMSSender()
 
-    # initialize with five minutes time for setup
-    time_since_last_period = time.time() + 300
+    # keep time of the current period
+    period_timer = utils.PeriodTime()
 
     # take an image every period
     period_imager = utils.PeriodImager()
@@ -61,21 +61,17 @@ def main():
             logger.add_printout(" " + str(reset_counter) + " resets;")
             logger.add_printout(
                 " "
-                + utils.period_to_str(round(time.time() - time_since_last_period, 2))
+                + utils.period_to_str(round(period_timer.get_passed_time(), 2))
                 + "s period; "
             )
 
+            is_detected = search_engine.is_mewtwo(frame)
+            period_timer.preemptive_check(is_detected, is_last_detected)
+
             # search for pokemon
-            if search_engine.is_mewtwo(frame) or (
-                not is_last_detected
-                and ((time.time() - time_since_last_period) >= utils.TIME_FOR_SHINY)
-            ):
-                if not is_last_detected and (
-                    (time.time() - time_since_last_period) >= utils.TIME_FOR_SHINY
-                ):
-                    period_imager.take_image(time_since_last_period, frame)
-                is_detected = True
+            if is_detected or period_timer.is_pokemon_present():
                 logger.add_printout(" detection;")
+
                 if search_engine.is_mewtwo_shiny(frame):
                     utils.save_shiny(frame)
                     # turn off the controller
@@ -101,12 +97,12 @@ def main():
         print(logger.print(), end="")
 
         # take sample images
-        period_imager.take_image(time_since_last_period, frame)
+        period_imager.take_image(period_timer.get_passed_time(), frame)
 
         # update for next period
         if not is_detected and is_last_detected:
             reset_counter += 1
-            time_since_last_period = time.time()
+            period_timer.reset()
             period_imager.reset(reset_counter)
 
         is_last_detected = is_detected

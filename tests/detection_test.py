@@ -1,5 +1,6 @@
 import cv2
 import copy
+import time
 import numpy as np
 
 import utils
@@ -51,3 +52,13 @@ def test_is_mewtwo_shiny_false():  # 1400 350
     mewtwo_reference = cv2.imread("selected_references/mewtwo_reference.png")
     assert mewtwo_reference is not None
     assert not search_engine.is_mewtwo_shiny(mewtwo_reference)
+
+
+def test_is_pokemon_present():
+    period_timer = utils.PeriodTime()
+    period_timer.reset()
+    assert period_timer.get_passed_time() < 0.01
+    time.sleep(utils.TIME_FOR_SHINY - 0.25)
+    assert not period_timer.is_pokemon_present()
+    time.sleep(0.5)
+    assert period_timer.is_pokemon_present()

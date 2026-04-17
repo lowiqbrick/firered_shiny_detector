@@ -176,9 +176,7 @@ class PeriodImager:
         )
 
     def take_image(self, time_since_last_period: float, frame: cv2.typing.MatLike):
-        if (
-            time.time() - time_since_last_period
-        ) >= TIME_FOR_SHINY and not self.__image_taken:
+        if (time_since_last_period) >= TIME_FOR_SHINY and not self.__image_taken:
             self.save_encounter(frame)
             self.__image_taken = True
 
@@ -188,6 +186,24 @@ class PeriodImager:
         self.__image_taken = False
         if (reset_counter % 10) == 0:
             subprocess.run(["python3", "references/cleanup.py"])
+
+
+class PeriodTime:
+    def __init__(self) -> None:
+        self.period_time = time.time() + 300
+
+    def get_passed_time(self) -> float:
+        return time.time() - self.period_time
+
+    def preemptive_check(self, is_detected: bool, is_last_detected: bool):
+        if not is_detected and is_last_detected:
+            self.reset()
+
+    def is_pokemon_present(self) -> bool:
+        return self.get_passed_time() >= TIME_FOR_SHINY
+
+    def reset(self):
+        self.period_time = time.time()
 
 
 if __name__ == "__main__":
