@@ -184,7 +184,7 @@ class PeriodImager:
         if not self.__image_taken and reset_counter > 2:
             print("\nmewtwo image not taken in cycle " + str(datetime.datetime.now()))
         self.__image_taken = False
-        if (reset_counter % 10) == 0:
+        if (reset_counter % 5) == 0:
             subprocess.run(["python3", "references/cleanup.py"])
 
 
