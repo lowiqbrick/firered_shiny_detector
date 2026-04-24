@@ -1,0 +1,13 @@
+{
+    "cSpell.words": [
+        "averager",
+        "gpiozero",
+        "imager",
+        "imread",
+        "imshow",
+        "imwrite",
+        "mewtwo"
+    ],
+    "python.languageServer": "Pylance",
+    "python.analysis.typeCheckingMode": "standard"
+}
