@@ -69,6 +69,10 @@ def main():
             period_timer.preemptive_check(is_detected, is_last_detected)
             if period_timer.is_pokemon_present():
                 period_imager.save_encounter(frame)
+            if not is_detected and period_timer.get_passed_time() >= 18.4:
+                print("\npokemon should be present, but isn't detected (shiny?)")
+                print(logger.print(), end="")
+                break
 
             # search for pokemon
             if is_detected or period_timer.is_pokemon_present():
