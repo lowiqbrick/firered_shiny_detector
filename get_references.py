@@ -1,9 +1,13 @@
 import cv2
 import time
+from gpiozero import LED
 
 SAVED_FRAMES_PER_SECOND = 4
 
 if __name__ == "__main__":
+    # start controller pin
+    controller = LED(21)
+
     # get video source (0: switch 2; 1: pc webcam)
     cap = cv2.VideoCapture(0)
 
