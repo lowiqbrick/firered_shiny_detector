@@ -3,6 +3,7 @@ import os
 import time
 import datetime
 import subprocess
+import numpy as np
 
 # time for one macro period - 0.5 seconds for relay
 TIME_FOR_SHINY = 17.9
@@ -49,24 +50,18 @@ def is_image_part_equal(
     reference_image: cv2.typing.MatLike,
     captured_image: cv2.typing.MatLike,
     comparison_area: Rectangle,
+    threshold: int = 5,
 ) -> bool:
     "compares part of two images specified in the comparison area on a pixel basis"
-    for width_index in range(
-        int(comparison_area.top_left.x), int(comparison_area.bottom_right.x), 5
-    ):
-        for height_index in range(
-            int(comparison_area.top_left.y), int(comparison_area.bottom_right.y), 5
-        ):
-            if (
-                reference_image[height_index][width_index][0]
-                != captured_image[height_index][width_index][0]
-                or reference_image[height_index][width_index][1]
-                != captured_image[height_index][width_index][1]
-                or reference_image[height_index][width_index][2]
-                != captured_image[height_index][width_index][2]
-            ):
-                return False
-    return True
+
+    x1, x2 = (int(comparison_area.top_left.x), int(comparison_area.bottom_right.x))
+    y1, y2 = (int(comparison_area.top_left.y), int(comparison_area.bottom_right.y))
+
+    reference_pixels = reference_image[y1:y2:5, x1:x2:5].astype(np.int16)
+    captured_pixels = captured_image[y1:y2:5, x1:x2:5].astype(np.int16)
+
+    differences = np.abs(reference_pixels - captured_pixels)
+    return bool(np.all(differences <= threshold))
 
 
 def is_status_menu_equal(
