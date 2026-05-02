@@ -6,7 +6,8 @@
         "imread",
         "imshow",
         "imwrite",
-        "mewtwo"
+        "mewtwo",
+        "Zasluke"
     ],
     "python.languageServer": "Pylance",
     "python.analysis.typeCheckingMode": "standard"
