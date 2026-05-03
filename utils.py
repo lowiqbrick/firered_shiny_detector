@@ -51,6 +51,7 @@ def is_image_part_equal(
     captured_image: cv2.typing.MatLike,
     comparison_area: Rectangle,
     threshold: int = 5,
+    min_match_ratio: float = 0.95,
 ) -> bool:
     "compares part of two images specified in the comparison area on a pixel basis"
 
@@ -61,7 +62,30 @@ def is_image_part_equal(
     captured_pixels = captured_image[y1:y2:5, x1:x2:5].astype(np.int16)
 
     differences = np.abs(reference_pixels - captured_pixels)
-    return bool(np.all(differences <= threshold))
+    # Calculate what percentage of color elements are within the threshold
+    matches = np.sum(differences <= threshold)
+    match_ratio = matches / differences.size
+    return bool(match_ratio >= min_match_ratio)
+
+
+def get_difference_percentage(
+    reference_image: cv2.typing.MatLike,
+    captured_image: cv2.typing.MatLike,
+    comparison_area: Rectangle,
+    threshold: int = 20,
+) -> float:
+    """Calculates what percentage of pixels in a region differ significantly."""
+    x1, x2 = (int(comparison_area.top_left.x), int(comparison_area.bottom_right.x))
+    y1, y2 = (int(comparison_area.top_left.y), int(comparison_area.bottom_right.y))
+
+    ref_part = reference_image[y1:y2:5, x1:x2:5].astype(np.int16)
+    cap_part = captured_image[y1:y2:5, x1:x2:5].astype(np.int16)
+
+    # Find pixels where the difference is greater than the threshold
+    diff = np.abs(ref_part - cap_part)
+    # Check if ANY of the 3 color channels (BGR) differ
+    mask = np.any(diff > threshold, axis=2)
+    return float((np.sum(mask) / mask.size) * 100)
 
 
 def is_status_menu_equal(
@@ -180,7 +204,9 @@ class PeriodImager:
             print("\nmewtwo image not taken in cycle " + str(datetime.datetime.now()))
         self.__image_taken = False
         if (reset_counter % 5) == 0:
-            subprocess.run(["python3", "references/cleanup.py"])
+            # Run cleanup as a background process to avoid blocking the main detection loop
+            # This prevents "hiccups" in the timing method
+            subprocess.Popen(["python3", "references/cleanup.py"])
 
 
 class PeriodTime:
