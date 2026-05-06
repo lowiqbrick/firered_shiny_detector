@@ -38,6 +38,7 @@ def main():
     period_imager = utils.PeriodImager()
 
     is_last_detected = False
+    last_image = None
     reset_counter = 0
 
     print("started at " + str(datetime.datetime.now()))
@@ -110,8 +111,12 @@ def main():
             reset_counter += 1
             period_timer.reset()
             period_imager.reset(reset_counter)
+            if last_image is not None:
+                period_imager.save_encounter(last_image)
 
         is_last_detected = is_detected
+        if frame is not None:
+            last_image = frame
 
 
 if __name__ == "__main__":
