@@ -51,6 +51,19 @@ def test_is_mewtwo_during_send_out():
     assert search_engine.is_mewtwo_shiny(send_out_reference)
 
 
+def test_is_mewtwo_normal():
+    search_engine = specific_pokemon.PokemonSearchEngine()
+    mewtwo_reference = cv2.imread("selected_references/mewtwo_reference.png")
+    assert mewtwo_reference is not None
+    assert search_engine.is_mewtwo_normal(mewtwo_reference)
+
+
+def test_is_mewtwo_normal_false():
+    search_engine = specific_pokemon.PokemonSearchEngine()
+    black_image = np.zeros((1080, 1920, 3))
+    assert not search_engine.is_mewtwo_normal(black_image)
+
+
 def test_is_mewtwo_shiny():
     search_engine = specific_pokemon.PokemonSearchEngine()
     mewtwo_reference = cv2.imread("selected_references/mewtwo_reference.png")

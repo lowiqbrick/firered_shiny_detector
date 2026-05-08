@@ -17,6 +17,18 @@ class PokemonSearchEngine:
         # If the difference is low (e.g., < 10%), the pokemon is likely present
         return diff_percent < 10.0
 
+    def is_mewtwo_normal(self, captured_image: cv2.typing.MatLike) -> bool:
+        assert self.mewtwo_reference is not None
+
+        # Compare the entire pokemon sprite area
+        diff_percent = utils.get_difference_percentage(
+            self.mewtwo_reference, captured_image, utils.opponent_pokemon()
+        )
+
+        # If more than 1.5% of the sprite area has changed, it's likely a shiny.
+        # (Standard capture noise usually stays below 1%)
+        return diff_percent < 0.1
+
     def is_mewtwo_shiny(self, captured_image: cv2.typing.MatLike) -> bool:
         assert self.mewtwo_reference is not None
 

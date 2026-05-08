@@ -63,44 +63,39 @@ def main():
             logger.add_printout(
                 " "
                 + utils.period_to_str(round(period_timer.get_passed_time(), 2))
-                + "s period; "
+                + "s period;"
             )
 
-            is_detected = search_engine.is_mewtwo(frame)
+            is_detected = search_engine.is_mewtwo_normal(frame)
+            if is_detected:
+                logger.add_printout(" mewtwo detected;")
+            else:
+                logger.add_printout(" mewtwo not detected;")
+
             period_timer.preemptive_check(is_detected, is_last_detected)
             if period_timer.is_pokemon_present():
                 period_imager.save_encounter(frame)
-            if not is_detected and period_timer.get_passed_time() >= 18.4:
-                print("\npokemon should be present, but isn't detected (shiny?)")
+
+            if not is_detected and period_timer.get_passed_time() >= 18.0:
+                utils.save_shiny(frame)
+                # turn off the controller
+                controller.on()
+                logger.add_printout("shiny found omg !!!!11111eleven")
                 print(logger.print(), end="")
-                break
-
-            # search for pokemon
-            if is_detected or period_timer.is_pokemon_present():
-                logger.add_printout(" detection;")
-
-                if search_engine.is_mewtwo_shiny(frame):
-                    utils.save_shiny(frame)
-                    # turn off the controller
-                    controller.on()
-                    logger.add_printout("shiny found omg !!!!11111eleven")
-                    print(logger.print(), end="")
-                    date_time = str(datetime.datetime.now())
-                    # notify me
-                    try:
-                        sender.send("shiny suspected at " + str(date_time))
-                    except ConnectionError:
-                        print("\nfailed to send message")
-                    finally:
-                        break
-                else:
-                    logger.add_printout(" not shiny;")
+                date_time = str(datetime.datetime.now())
+                # notify me
+                try:
+                    sender.send("shiny suspected at " + str(date_time))
+                except ConnectionError:
+                    print("\nfailed to send message")
+                finally:
+                    break
 
         # fps calculation
         delta_time = time.time() - start_time
         if delta_time:
             fps_averager.insert_new_value(1 / delta_time)
-            logger.add_printout("fps: " + str(fps_averager.get_fps()) + ";")
+            logger.add_printout(" fps: " + str(fps_averager.get_fps()) + ";")
         print(logger.print(), end="")
 
         # take sample images
