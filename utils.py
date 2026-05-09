@@ -1,5 +1,8 @@
 import cv2
 import os
+import sms
+import utils
+import specific_pokemon
 import time
 import datetime
 import subprocess
@@ -225,6 +228,29 @@ class PeriodTime:
 
     def reset(self):
         self.period_time = time.time()
+
+
+class LoopStructs:
+    def __init__(self):
+        # load all reference images
+        self.search_engine = specific_pokemon.PokemonSearchEngine()
+        # averaging pfs values
+        self.fps_averager = utils.FPSAverager(60)
+        # status printer
+        self.logger = utils.LoopReporter()
+        # sms notification (not mandatory)
+        self.sender = sms.SMSSender()
+        # keep time of the current period
+        self.period_timer = utils.PeriodTime()
+        # take an image every period
+        self.period_imager = utils.PeriodImager()
+
+
+class LoopVariables:
+    def __init__(self):
+        self.is_last_detected: bool = False
+        self.last_image: cv2.typing.MatLike | None = None
+        self.reset_counter: int = 0
 
 
 if __name__ == "__main__":

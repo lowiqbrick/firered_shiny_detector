@@ -3,43 +3,22 @@ import time
 import datetime
 from gpiozero import LED
 
-import sms
 import utils
-import specific_pokemon
 
 
 def main():
     # start controller pin
     controller = LED(21)
 
-    # load all reference images
-    search_engine = specific_pokemon.PokemonSearchEngine()
-
-    # averaging pfs values
-    fps_averager = utils.FPSAverager(60)
-
     # get video source (0: switch 2; 1: pc webcam)
     cap = cv2.VideoCapture(0)
-
-    # status printer
-    logger = utils.LoopReporter()
 
     # set limits for capture of switch 2
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
 
-    # sms notification (not mandatory)
-    sender = sms.SMSSender()
-
-    # keep time of the current period
-    period_timer = utils.PeriodTime()
-
-    # take an image every period
-    period_imager = utils.PeriodImager()
-
-    is_last_detected = False
-    last_image = None
-    reset_counter = 0
+    loop_structs = utils.LoopStructs()
+    loop_variables = utils.LoopVariables()
 
     print("started at " + str(datetime.datetime.now()))
 
@@ -51,41 +30,47 @@ def main():
         success, frame = cap.read()
 
         if not success:
-            logger.add_printout("no frame")
+            loop_structs.logger.add_printout("no frame")
             cv2.destroyAllWindows()
         else:
-            logger.add_printout("got frame;")
+            loop_structs.logger.add_printout("got frame;")
             # display frame
             cv2.imshow("HDMI Video Capture", cv2.resize(src=frame, dsize=(1000, 500)))
             cv2.waitKey(1)
 
-            logger.add_printout(" " + str(reset_counter) + " resets;")
-            logger.add_printout(
+            loop_structs.logger.add_printout(
+                " " + str(loop_variables.reset_counter) + " resets;"
+            )
+            loop_structs.logger.add_printout(
                 " "
-                + utils.period_to_str(round(period_timer.get_passed_time(), 2))
+                + utils.period_to_str(
+                    round(loop_structs.period_timer.get_passed_time(), 2)
+                )
                 + "s period;"
             )
 
-            is_detected = search_engine.is_mewtwo_normal(frame)
+            is_detected = loop_structs.search_engine.is_mewtwo_normal(frame)
             if is_detected:
-                logger.add_printout(" mewtwo detected;")
+                loop_structs.logger.add_printout(" mewtwo detected;")
             else:
-                logger.add_printout(" mewtwo not detected;")
+                loop_structs.logger.add_printout(" mewtwo not detected;")
 
-            period_timer.preemptive_check(is_detected, is_last_detected)
-            if period_timer.is_pokemon_present():
-                period_imager.save_encounter(frame)
+            loop_structs.period_timer.preemptive_check(
+                is_detected, loop_variables.is_last_detected
+            )
+            if loop_structs.period_timer.is_pokemon_present():
+                loop_structs.period_imager.save_encounter(frame)
 
-            if not is_detected and period_timer.get_passed_time() >= 18.0:
+            if not is_detected and loop_structs.period_timer.get_passed_time() >= 18.0:
                 utils.save_shiny(frame)
                 # turn off the controller
                 controller.on()
-                logger.add_printout("shiny found omg !!!!11111eleven")
-                print(logger.print(), end="")
+                loop_structs.logger.add_printout("shiny found omg !!!!11111eleven")
+                print(loop_structs.logger.print(), end="")
                 date_time = str(datetime.datetime.now())
                 # notify me
                 try:
-                    sender.send("shiny suspected at " + str(date_time))
+                    loop_structs.sender.send("shiny suspected at " + str(date_time))
                 except ConnectionError:
                     print("\nfailed to send message")
                 finally:
@@ -94,24 +79,28 @@ def main():
         # fps calculation
         delta_time = time.time() - start_time
         if delta_time:
-            fps_averager.insert_new_value(1 / delta_time)
-            logger.add_printout(" fps: " + str(fps_averager.get_fps()) + ";")
-        print(logger.print(), end="")
+            loop_structs.fps_averager.insert_new_value(1 / delta_time)
+            loop_structs.logger.add_printout(
+                " fps: " + str(loop_structs.fps_averager.get_fps()) + ";"
+            )
+        print(loop_structs.logger.print(), end="")
 
         # take sample images
-        period_imager.take_image(period_timer.get_passed_time(), frame)
+        loop_structs.period_imager.take_image(
+            loop_structs.period_timer.get_passed_time(), frame
+        )
 
         # update for next period
-        if not is_detected and is_last_detected:
-            reset_counter += 1
-            period_timer.reset()
-            period_imager.reset(reset_counter)
-            if last_image is not None:
-                period_imager.save_encounter(last_image)
+        if not is_detected and loop_variables.is_last_detected:
+            loop_variables.reset_counter += 1
+            loop_structs.period_timer.reset()
+            loop_structs.period_imager.reset(loop_variables.reset_counter)
+            if loop_variables.last_image is not None:
+                loop_structs.period_imager.save_encounter(loop_variables.last_image)
 
-        is_last_detected = is_detected
+        loop_variables.is_last_detected = is_detected
         if frame is not None:
-            last_image = frame
+            loop_variables.last_image = frame
 
 
 if __name__ == "__main__":
