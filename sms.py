@@ -14,7 +14,6 @@ class SMSSender:
         self.to_address = os.environ.get("MY_NUMBER")
         self.client = Client(self.account_sid, self.auth_token)
         self.__time_last_sent = time.time() - self.TIME_BETWEEN_SENDS
-        assert self.to_address is not None
 
     def is_timeout_over(self) -> bool:
         if (self.__time_last_sent + self.TIME_BETWEEN_SENDS) < time.time():
@@ -24,7 +23,11 @@ class SMSSender:
             return False
 
     def send(self, message: str):
+        if self.to_address is None and "PYTEST_CURRENT_TEST" not in os.environ:
+            print("\nno address given\n")
+
         assert self.to_address is not None
+
         if self.is_timeout_over():
             self.client.messages.create(
                 body=message, from_=self.from_address, to=self.to_address

@@ -106,23 +106,24 @@ def is_pokemon_equal(
 
 
 def save_shiny(image: cv2.typing.MatLike):
-    date_time = datetime.datetime.now()
-    cv2.imwrite(
-        "suspected_shiny_"
-        + str(date_time.year)
-        + "_"
-        + str(date_time.month)
-        + "_"
-        + str(date_time.day)
-        + "_"
-        + str(date_time.hour)
-        + "_"
-        + str(date_time.minute)
-        + "_"
-        + str(date_time.second)
-        + ".png",
-        image,
-    )
+    if "PYTEST_CURRENT_TEST" not in os.environ:
+        date_time = datetime.datetime.now()
+        cv2.imwrite(
+            "suspected_shiny_"
+            + str(date_time.year)
+            + "_"
+            + str(date_time.month)
+            + "_"
+            + str(date_time.day)
+            + "_"
+            + str(date_time.hour)
+            + "_"
+            + str(date_time.minute)
+            + "_"
+            + str(date_time.second)
+            + ".png",
+            image,
+        )
 
 
 class FPSAverager:
@@ -177,25 +178,26 @@ class PeriodImager:
         self.__image_taken = False
 
     def save_encounter(self, image: cv2.typing.MatLike):
-        date_time = datetime.datetime.now()
-        cv2.imwrite(
-            "references/encounter_"
-            + str(date_time.year)
-            + "_"
-            + str(date_time.month)
-            + "_"
-            + str(date_time.day)
-            + "_"
-            + str(date_time.hour)
-            + "_"
-            + str(date_time.minute)
-            + "_"
-            + str(date_time.second)
-            + "_"
-            + str(date_time.microsecond)
-            + ".png",
-            image,
-        )
+        if "PYTEST_CURRENT_TEST" not in os.environ:
+            date_time = datetime.datetime.now()
+            cv2.imwrite(
+                "references/encounter_"
+                + str(date_time.year)
+                + "_"
+                + str(date_time.month)
+                + "_"
+                + str(date_time.day)
+                + "_"
+                + str(date_time.hour)
+                + "_"
+                + str(date_time.minute)
+                + "_"
+                + str(date_time.second)
+                + "_"
+                + str(date_time.microsecond)
+                + ".png",
+                image,
+            )
 
     def take_image(self, time_since_last_period: float, frame: cv2.typing.MatLike):
         if (time_since_last_period) >= TIME_FOR_SHINY and not self.__image_taken:
@@ -203,7 +205,11 @@ class PeriodImager:
             self.__image_taken = True
 
     def reset(self, reset_counter: int):
-        if not self.__image_taken and reset_counter > 2:
+        if (
+            not self.__image_taken
+            and reset_counter > 2
+            and ("PYTEST_CURRENT_TEST" not in os.environ)
+        ):
             print("\nmewtwo image not taken in cycle " + str(datetime.datetime.now()))
         self.__image_taken = False
         if (reset_counter % 5) == 0:
@@ -251,6 +257,12 @@ class LoopVariables:
         self.is_last_detected: bool = False
         self.last_image: cv2.typing.MatLike | None = None
         self.reset_counter: int = 0
+
+
+class NoNewMewtwoException(Exception):
+    def __init__(self):
+        self.message = "the loop didn't detect a normal mewtwo after the timeout passed"
+        super().__init__(self.message)
 
 
 if __name__ == "__main__":
