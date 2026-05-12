@@ -61,8 +61,8 @@ def is_image_part_equal(
     x1, x2 = (int(comparison_area.top_left.x), int(comparison_area.bottom_right.x))
     y1, y2 = (int(comparison_area.top_left.y), int(comparison_area.bottom_right.y))
 
-    reference_pixels = reference_image[y1:y2:5, x1:x2:5].astype(np.int16)
-    captured_pixels = captured_image[y1:y2:5, x1:x2:5].astype(np.int16)
+    reference_pixels = reference_image[y1:y2:2, x1:x2:2].astype(np.int16)
+    captured_pixels = captured_image[y1:y2:2, x1:x2:2].astype(np.int16)
 
     differences = np.abs(reference_pixels - captured_pixels)
     # Calculate what percentage of color elements are within the threshold
@@ -75,14 +75,14 @@ def get_difference_percentage(
     reference_image: cv2.typing.MatLike,
     captured_image: cv2.typing.MatLike,
     comparison_area: Rectangle,
-    threshold: int = 20,
+    threshold: int = 5,
 ) -> float:
     """Calculates what percentage of pixels in a region differ significantly."""
     x1, x2 = (int(comparison_area.top_left.x), int(comparison_area.bottom_right.x))
     y1, y2 = (int(comparison_area.top_left.y), int(comparison_area.bottom_right.y))
 
-    ref_part = reference_image[y1:y2:5, x1:x2:5].astype(np.int16)
-    cap_part = captured_image[y1:y2:5, x1:x2:5].astype(np.int16)
+    ref_part = reference_image[y1:y2:2, x1:x2:2].astype(np.int16)
+    cap_part = captured_image[y1:y2:2, x1:x2:2].astype(np.int16)
 
     # Find pixels where the difference is greater than the threshold
     diff = np.abs(ref_part - cap_part)

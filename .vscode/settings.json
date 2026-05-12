@@ -1,6 +1,7 @@
 {
     "cSpell.words": [
         "averager",
+        "BUFFERSIZE",
         "gpiozero",
         "imager",
         "imread",

@@ -17,6 +17,7 @@ def main():
     # set limits for capture of switch 2
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
+    cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
 
     loop_structs = utils.LoopStructs()
     loop_variables = utils.LoopVariables()
@@ -84,7 +85,10 @@ def image_processing(
     if loop_structs.period_timer.is_pokemon_present():
         loop_structs.period_imager.save_encounter(frame)
 
-    if not is_detected and loop_structs.period_timer.get_passed_time() >= 18.0:
+    if (not is_detected and loop_structs.period_timer.get_passed_time() >= 18.0) or (
+        loop_structs.search_engine.is_mewtwo(frame)
+        and loop_structs.search_engine.is_mewtwo_shiny(frame)
+    ):
         utils.save_shiny(frame)
         # turn off the controller
         controller.on()
