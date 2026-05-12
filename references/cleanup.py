@@ -1,36 +1,38 @@
 import os
 import cv2
-import numpy as np
+import hashlib
 
 if __name__ == "__main__":
-    # get paths
-    current_directory = os.getcwd() + "/"
-    subfolder = "references/"
-    reference_folder = current_directory + subfolder
+    # Use absolute path relative to this script's location
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    reference_folder = script_dir + "/"
 
-    processed_images = []
-
+    # Store hashes of pixel data instead of full images to save memory
+    processed_hashes = set()
     deleted_images = 0
 
     for filename in os.listdir(reference_folder):
+        if filename == "cleanup.py" or filename.startswith("."):
+            continue
+
         filepath = reference_folder + filename
 
-        # ignore this file
-        if filename == "cleanup.py":
+        if not os.path.isfile(filepath):
             continue
 
-        # read image data
-        # shape: (1080, 1920, 3); height, width, color channels)
         image = cv2.imread(filepath)
-        assert image is not None
 
-        # image already seen?
-        if any([np.array_equal(image, image_test) for image_test in processed_images]):
+        # Handle non-image files or corrupted captures gracefully
+        if image is None:
+            continue
+
+        # Calculate a hash of the pixel buffer
+        image_hash = hashlib.md5(image.tobytes()).hexdigest()
+
+        if image_hash in processed_hashes:
             os.remove(filepath)
             deleted_images += 1
-            continue
+        else:
+            processed_hashes.add(image_hash)
 
-        # add image to list if not yet seen
-        processed_images.append(image)
-
-    # print("deleted " + str(deleted_images) + " images")
+    # print(f"Deleted {deleted_images} duplicate images.")
