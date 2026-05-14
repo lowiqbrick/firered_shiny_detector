@@ -70,7 +70,7 @@ def image_processing(
     loop_structs.logger.add_printout(
         " "
         + utils.period_to_str(round(loop_structs.period_timer.get_passed_time(), 2))
-        + "s period;"
+        + f"s period (av {loop_structs.macro_duration.get_duration_str()});"
     )
 
     is_detected = loop_structs.search_engine.is_mewtwo_normal(frame)
@@ -82,10 +82,16 @@ def image_processing(
     loop_structs.period_timer.preemptive_check(
         is_detected, loop_variables.is_last_detected
     )
-    if loop_structs.period_timer.is_pokemon_present():
+    if loop_structs.period_timer.is_pokemon_present(
+        loop_structs.macro_duration.time_for_shiny()
+    ):
         loop_structs.period_imager.save_encounter(frame)
 
-    if (not is_detected and loop_structs.period_timer.get_passed_time() >= 18.0) or (
+    if (
+        not is_detected
+        and loop_structs.period_timer.get_passed_time()
+        >= loop_structs.macro_duration.time_for_shiny()
+    ) or (
         loop_structs.search_engine.is_mewtwo(frame)
         and loop_structs.search_engine.is_mewtwo_shiny(frame)
     ):
@@ -126,8 +132,18 @@ def loop_update(
 
     # take sample images
     loop_structs.period_imager.take_image(
-        loop_structs.period_timer.get_passed_time(), frame
+        loop_structs.period_timer.get_passed_time(),
+        frame,
+        loop_structs.macro_duration.time_for_shiny(),
     )
+
+    # update macro length
+    if (
+        loop_variables.period_length_last_loop
+        > loop_structs.period_timer.get_passed_time()
+    ):
+        loop_structs.macro_duration.update(loop_variables.period_length_last_loop)
+    loop_variables.period_length_last_loop = loop_structs.period_timer.get_passed_time()
 
     # update for next period
     if not is_detected and loop_variables.is_last_detected:

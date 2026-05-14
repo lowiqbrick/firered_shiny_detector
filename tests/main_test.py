@@ -24,11 +24,13 @@ def test_regular():
         black_image, controller, loop_structs, loop_variables
     )
     main.loop_update(is_detected, start_time, black_image, loop_structs, loop_variables)
+    time.sleep(17.5)
 
     start_time = time.time()
     is_detected = main.image_processing(
         mewtwo_image, controller, loop_structs, loop_variables
     )
+    time.sleep(1.5)
     main.loop_update(
         is_detected, start_time, mewtwo_image, loop_structs, loop_variables
     )
@@ -47,10 +49,14 @@ def test_regular():
         is_detected = main.image_processing(
             mewtwo_image, controller, loop_structs, loop_variables
         )
+        time.sleep(1.5)
         main.loop_update(
             is_detected, start_time, mewtwo_image, loop_structs, loop_variables
         )
-        time.sleep(1.5)
+
+    assert loop_variables.period_length_last_loop == pytest.approx(
+        expected=19.0, abs=0.02
+    )
 
     # do one more black image to count the last for-loop iteration
     start_time = time.time()
@@ -80,11 +86,13 @@ def test_fail_on_irregular():
         main.loop_update(
             is_detected, start_time, black_image, loop_structs, loop_variables
         )
+        time.sleep(17.5)
 
         start_time = time.time()
         is_detected = main.image_processing(
             mewtwo_image, controller, loop_structs, loop_variables
         )
+        time.sleep(1.5)
         main.loop_update(
             is_detected, start_time, mewtwo_image, loop_structs, loop_variables
         )
@@ -103,10 +111,10 @@ def test_fail_on_irregular():
         is_detected = main.image_processing(
             mewtwo_image, controller, loop_structs, loop_variables
         )
+        time.sleep(1.5)
         main.loop_update(
             is_detected, start_time, mewtwo_image, loop_structs, loop_variables
         )
-        time.sleep(1.5)
 
         # give black image in timeout to simulate shiny
         start_time = time.time()

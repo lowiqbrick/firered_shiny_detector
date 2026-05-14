@@ -8,9 +8,6 @@ import datetime
 import subprocess
 import numpy as np
 
-# time for one macro period - 0.5 seconds for relay
-TIME_FOR_SHINY = 17.9
-
 
 class Point:
     def __init__(self, x: float, y: float):
@@ -199,8 +196,13 @@ class PeriodImager:
                 image,
             )
 
-    def take_image(self, time_since_last_period: float, frame: cv2.typing.MatLike):
-        if (time_since_last_period) >= TIME_FOR_SHINY and not self.__image_taken:
+    def take_image(
+        self,
+        time_since_last_period: float,
+        frame: cv2.typing.MatLike,
+        time_for_shiny: float,
+    ):
+        if (time_since_last_period) >= time_for_shiny and not self.__image_taken:
             self.save_encounter(frame)
             self.__image_taken = True
 
@@ -229,11 +231,47 @@ class PeriodTime:
         if not is_detected and is_last_detected:
             self.reset()
 
-    def is_pokemon_present(self) -> bool:
-        return self.get_passed_time() >= TIME_FOR_SHINY
+    def is_pokemon_present(self, time_for_shiny: float) -> bool:
+        return self.get_passed_time() >= time_for_shiny
 
     def reset(self):
         self.period_time = time.time()
+
+
+class MacroDuration:
+    def __init__(self):
+        self._old_weight = 0.9
+        self._new_weight = 1 - self._old_weight
+        self._duration = None
+        self._time_for_shiny_offset = 0.75
+
+    def update(self, new_duration: float):
+        if new_duration <= 0:
+            return
+
+        if self._duration is None:
+            self._duration = new_duration
+        else:
+            self._duration = (self._duration * self._old_weight) + (
+                new_duration * self._new_weight
+            )
+
+    def time_for_shiny(self) -> float:
+        # return high value to prevent false alarms
+        if self._duration is None or self._duration <= self._time_for_shiny_offset:
+            return 300
+        return self._duration - self._time_for_shiny_offset
+
+    def should_shiny_be_present(self) -> bool:
+        if self._duration is None:
+            return False
+        return self._duration >= self.time_for_shiny()
+
+    def get_duration_str(self) -> str:
+        if self._duration is None:
+            return "None"
+        else:
+            return str(round(self._duration, 2)) + "s"
 
 
 class LoopStructs:
@@ -250,6 +288,8 @@ class LoopStructs:
         self.period_timer = utils.PeriodTime()
         # take an image every period
         self.period_imager = utils.PeriodImager()
+        # adjust the macro duration dynamically
+        self.macro_duration = utils.MacroDuration()
 
 
 class LoopVariables:
@@ -257,6 +297,7 @@ class LoopVariables:
         self.is_last_detected: bool = False
         self.last_image: cv2.typing.MatLike | None = None
         self.reset_counter: int = 0
+        self.period_length_last_loop: float = -300.0
 
 
 class NoNewMewtwoException(Exception):

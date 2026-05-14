@@ -85,10 +85,11 @@ def test_is_mewtwo_shiny_false():  # 1400 350
 
 
 def test_is_pokemon_present():
+    time_for_shiny = 0.25
     period_timer = utils.PeriodTime()
     period_timer.reset()
     assert period_timer.get_passed_time() < 0.01
-    time.sleep(utils.TIME_FOR_SHINY - 0.25)
-    assert not period_timer.is_pokemon_present()
+    time.sleep(time_for_shiny - 0.125)
+    assert not period_timer.is_pokemon_present(time_for_shiny)
     time.sleep(0.5)
-    assert period_timer.is_pokemon_present()
+    assert period_timer.is_pokemon_present(time_for_shiny)
