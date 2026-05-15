@@ -95,22 +95,25 @@ def image_processing(
         loop_structs.search_engine.is_mewtwo(frame)
         and loop_structs.search_engine.is_mewtwo_shiny(frame)
     ):
-        utils.save_shiny(frame)
-        # turn off the controller
-        controller.on()
-        loop_structs.logger.add_printout("shiny found omg !!!!11111eleven")
-        if "PYTEST_CURRENT_TEST" not in os.environ:
-            print(loop_structs.logger.print(), end="")
-        date_time = str(datetime.datetime.now())
-        # notify me
-        try:
-            loop_structs.sender.send("shiny suspected at " + str(date_time))
-        except ConnectionError:
-            print("\nfailed to send message")
-        finally:
-            raise utils.NoNewMewtwoException()
+        handle_shiny_found(frame, controller, loop_structs)
 
     return is_detected
+
+
+def handle_shiny_found(frame, controller, loop_structs):
+    utils.save_shiny(frame)
+    controller.on()
+    loop_structs.logger.add_printout("shiny found omg !!!!11111eleven")
+    if "PYTEST_CURRENT_TEST" not in os.environ:
+        print(loop_structs.logger.print(), end="")
+
+    date_time = str(datetime.datetime.now())
+    try:
+        loop_structs.sender.send("shiny suspected at " + str(date_time))
+    except ConnectionError:
+        print("\nfailed to send message")
+    finally:
+        raise utils.NoNewMewtwoException()
 
 
 def loop_update(
