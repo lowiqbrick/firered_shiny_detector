@@ -106,7 +106,7 @@ def save_shiny(image: cv2.typing.MatLike):
     if "PYTEST_CURRENT_TEST" not in os.environ:
         date_time = datetime.datetime.now()
         cv2.imwrite(
-            "suspected_shiny_"
+            "references/suspected_shiny_"
             + str(date_time.year)
             + "_"
             + str(date_time.month)
