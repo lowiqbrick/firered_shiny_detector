@@ -12,6 +12,16 @@ The issue with this approach is that the controller does that forever, even if a
 
 This requires something to turn the controller of once a shiny encounter is present. This is where this repository comes in.
 
+## Controller Macro
+
+![image](readme_images/controller_macro.png)
+
+The macro used in this project is shown in the image above. The image is taken from the controllers configuration software [8BitDo Ultimate Software V2](https://app.8bitdo.com/Ultimate-Software-V2/).
+
+It is supposed to be started on the screen with the copyright notices. Once started it loads the save file, skips the following recap and starts the fight with a stationary legendary pokemon.
+
+One cycle takes approximately 20 seconds.
+
 ## Hardware
 
 ![image](readme_images/hardware_setup.jpg)
