@@ -20,7 +20,7 @@ The macro used in this project is shown in the image above. The image is taken f
 
 It is supposed to be started on the screen with the copyright notices. Once started it loads the save file, skips the following recap and starts the fight with a stationary legendary pokemon.
 
-One cycle takes approximately 20 seconds.
+One cycle takes approximately 18.8 seconds.
 
 ## Hardware
 
