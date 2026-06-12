@@ -42,6 +42,10 @@ After the power is cut the game isn't reset anymore and the Pokémon can be coll
 
 The program also contains the functionality to send an SMS via the [Twilio](https://www.twilio.com/en-us) service, in case a shiny is found. If this functionality is not desired the struct can just be deleted, without impacting the rest of the program.
 
-## Disclaimer
+## Discontinuation
 
-Even tough the program has been executed over multiple weeks, a success has yet to occur. Any advice or hints as to why would be appreciated.
+Not a single shiny pokemon was caught with this repositories software.
+
+I appears that the RNG in FireRed is linked to the button presses, at the start of the game. This represents a problem for this project, since these inputs are done via macro. This is hypothesized to lead to some random seeds to appear more often. If these seeds happen to not contain shiny pokemon, the program might run forever without a shiny appearing.
+
+This project was used for the foundation in [another repository](https://github.com/lowiqbrick/bdsp_shiny_detector).
